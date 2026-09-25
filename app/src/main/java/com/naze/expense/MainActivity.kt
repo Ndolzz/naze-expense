@@ -35,6 +35,8 @@ import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.ui.components.PlaceholderScreen
 import com.naze.expense.ui.dashboard.DashboardScreen
 import com.naze.expense.ui.dashboard.DashboardViewModel
+import com.naze.expense.ui.history.HistoryScreen
+import com.naze.expense.ui.history.HistoryViewModel
 import com.naze.expense.ui.navigation.Routes
 import com.naze.expense.ui.navigation.bottomNavItems
 import com.naze.expense.ui.theme.NazeExpenseTheme
@@ -107,10 +109,12 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun NavGraph(
-        navController: NavHostController,        container: AppContainer,
+        navController: NavHostController,
+        container: AppContainer,
     ) {
-        val dashboardFactory = viewModelFactory {
+        val viewModelFactory = viewModelFactory {
             initializer { DashboardViewModel(container) }
+            initializer { HistoryViewModel(container) }
         }
 
         NavHost(
@@ -118,13 +122,19 @@ class MainActivity : ComponentActivity() {
             startDestination = Routes.DASHBOARD,
         ) {
             composable(Routes.DASHBOARD) {
-                val vm: DashboardViewModel = viewModel(factory = dashboardFactory)
+                val vm: DashboardViewModel = viewModel(factory = viewModelFactory)
                 DashboardScreen(
                     viewModel = vm,
                     onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
                 )
             }
-            composable(Routes.HISTORY) { PlaceholderScreen("Riwayat") }
+            composable(Routes.HISTORY) {
+                val vm: HistoryViewModel = viewModel(factory = viewModelFactory)
+                HistoryScreen(
+                    viewModel = vm,
+                    onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
+                )
+            }
             composable(Routes.STATISTICS) { PlaceholderScreen("Statistik") }
             composable(Routes.BUDGET) { PlaceholderScreen("Budget") }
             composable(Routes.SETTINGS) { PlaceholderScreen("Setelan") }
