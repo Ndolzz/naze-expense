@@ -3,7 +3,6 @@ package com.naze.expense.ui.budget
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naze.expense.AppContainer
-import com.naze.expense.data.local.db.dao.CategoryTotal
 import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.domain.model.Budget
 import com.naze.expense.domain.model.Category
@@ -39,12 +38,12 @@ class BudgetViewModel(container: AppContainer) : ViewModel() {
     private val txRepo = container.transactionRepository
     private val settingsRepo = container.settingsRepository
 
-    private val (monthStart, monthEnd) = currentMonthRange()
+    private val monthRange = currentMonthRange()
     private val _snackbar = MutableStateFlow<String?>(null)
 
     val state: StateFlow<BudgetState> = combine(
         budgetRepo.observeAll(),
-        txRepo.observeExpenseByCategory(monthStart, monthEnd),
+        txRepo.observeExpenseByCategory(monthRange.first, monthRange.second),
         catRepo.observeByType(com.naze.expense.domain.model.TransactionType.EXPENSE),
         settingsRepo.settings,
         _snackbar,

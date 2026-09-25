@@ -23,13 +23,13 @@ class DashboardViewModel(container: AppContainer) : ViewModel() {
 
     private val repo = container.transactionRepository
     private val settingsRepo = container.settingsRepository
-    private val (monthStart, monthEnd) = currentMonthRange()
+    private val monthRange = currentMonthRange()
 
     val state: StateFlow<DashboardState> = combine(
         repo.observeTotalIncomeAll(),
         repo.observeTotalExpenseAll(),
-        repo.observeTotalIncomeBetween(monthStart, monthEnd),
-        repo.observeTotalExpenseBetween(monthStart, monthEnd),
+        repo.observeTotalIncomeBetween(monthRange.first, monthRange.second),
+        repo.observeTotalExpenseBetween(monthRange.first, monthRange.second),
         repo.observeAll(),
         settingsRepo.settings,
     ) { values ->
