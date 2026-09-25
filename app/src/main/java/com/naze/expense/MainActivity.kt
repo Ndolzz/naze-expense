@@ -34,13 +34,14 @@ import androidx.navigation.navArgument
 import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.ui.budget.BudgetScreen
 import com.naze.expense.ui.budget.BudgetViewModel
-import com.naze.expense.ui.components.PlaceholderScreen
 import com.naze.expense.ui.dashboard.DashboardScreen
 import com.naze.expense.ui.dashboard.DashboardViewModel
 import com.naze.expense.ui.history.HistoryScreen
 import com.naze.expense.ui.history.HistoryViewModel
 import com.naze.expense.ui.navigation.Routes
 import com.naze.expense.ui.navigation.bottomNavItems
+import com.naze.expense.ui.settings.SettingsScreen
+import com.naze.expense.ui.settings.SettingsViewModel
 import com.naze.expense.ui.statistics.StatisticsScreen
 import com.naze.expense.ui.statistics.StatisticsViewModel
 import com.naze.expense.ui.theme.NazeExpenseTheme
@@ -121,6 +122,7 @@ class MainActivity : ComponentActivity() {
             initializer { HistoryViewModel(container) }
             initializer { BudgetViewModel(container) }
             initializer { StatisticsViewModel(container) }
+            initializer { SettingsViewModel(container) }
         }
 
         NavHost(
@@ -149,7 +151,10 @@ class MainActivity : ComponentActivity() {
                 val vm: BudgetViewModel = viewModel(factory = viewModelFactory)
                 BudgetScreen(viewModel = vm)
             }
-            composable(Routes.SETTINGS) { PlaceholderScreen("Setelan") }
+            composable(Routes.SETTINGS) {
+                val vm: SettingsViewModel = viewModel(factory = viewModelFactory)
+                SettingsScreen(viewModel = vm)
+            }
             composable(
                 route = Routes.ADD_TRANSACTION,
                 arguments = listOf(navArgument("transactionId") {
