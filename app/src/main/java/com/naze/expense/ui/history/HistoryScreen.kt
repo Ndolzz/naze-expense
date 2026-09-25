@@ -59,6 +59,7 @@ fun HistoryScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val filter = state.filter
+    val currency = state.settings.currencyCode
     var showFilterSheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -103,7 +104,6 @@ fun HistoryScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.weight(1f),
                             )
-                            val currency = state.settings.currencyCode
                             if (group.dayIncome > 0) {
                                 Text(
                                     "+" + formatAmount(group.dayIncome, currency),
