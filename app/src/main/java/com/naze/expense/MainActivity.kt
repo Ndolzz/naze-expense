@@ -32,6 +32,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naze.expense.data.preferences.UserSettings
+import com.naze.expense.ui.budget.BudgetScreen
+import com.naze.expense.ui.budget.BudgetViewModel
 import com.naze.expense.ui.components.PlaceholderScreen
 import com.naze.expense.ui.dashboard.DashboardScreen
 import com.naze.expense.ui.dashboard.DashboardViewModel
@@ -115,6 +117,7 @@ class MainActivity : ComponentActivity() {
         val viewModelFactory = viewModelFactory {
             initializer { DashboardViewModel(container) }
             initializer { HistoryViewModel(container) }
+            initializer { BudgetViewModel(container) }
         }
 
         NavHost(
@@ -136,7 +139,10 @@ class MainActivity : ComponentActivity() {
                 )
             }
             composable(Routes.STATISTICS) { PlaceholderScreen("Statistik") }
-            composable(Routes.BUDGET) { PlaceholderScreen("Budget") }
+            composable(Routes.BUDGET) {
+                val vm: BudgetViewModel = viewModel(factory = viewModelFactory)
+                BudgetScreen(viewModel = vm)
+            }
             composable(Routes.SETTINGS) { PlaceholderScreen("Setelan") }
             composable(
                 route = Routes.ADD_TRANSACTION,
