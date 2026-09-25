@@ -62,6 +62,8 @@ fun AddEditTransactionScreen(
     val state by viewModel.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
     var showDatePicker by remember { mutableStateOf(false) }
+    val editingId = state.editingId
+    val isEditing = editingId != null && editingId > 0
 
     LaunchedEffect(state.saved) { if (state.saved) onDone() }
     LaunchedEffect(state.error) {
@@ -71,9 +73,9 @@ fun AddEditTransactionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (state.editingId != null && state.editingId > 0) "Edit Transaksi" else "Transaksi Baru") },
+                title = { Text(if (isEditing) "Edit Transaksi" else "Transaksi Baru") },
                 actions = {
-                    if (state.editingId != null && state.editingId > 0) {
+                    if (isEditing) {
                         IconButton(onClick = { viewModel.delete() }) {
                             Icon(Icons.Filled.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.tertiary)
                         }
