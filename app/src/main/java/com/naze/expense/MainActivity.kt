@@ -41,6 +41,8 @@ import com.naze.expense.ui.history.HistoryScreen
 import com.naze.expense.ui.history.HistoryViewModel
 import com.naze.expense.ui.navigation.Routes
 import com.naze.expense.ui.navigation.bottomNavItems
+import com.naze.expense.ui.statistics.StatisticsScreen
+import com.naze.expense.ui.statistics.StatisticsViewModel
 import com.naze.expense.ui.theme.NazeExpenseTheme
 import com.naze.expense.ui.transaction.AddEditTransactionScreen
 import com.naze.expense.ui.transaction.TransactionViewModel
@@ -118,6 +120,7 @@ class MainActivity : ComponentActivity() {
             initializer { DashboardViewModel(container) }
             initializer { HistoryViewModel(container) }
             initializer { BudgetViewModel(container) }
+            initializer { StatisticsViewModel(container) }
         }
 
         NavHost(
@@ -138,7 +141,10 @@ class MainActivity : ComponentActivity() {
                     onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
                 )
             }
-            composable(Routes.STATISTICS) { PlaceholderScreen("Statistik") }
+            composable(Routes.STATISTICS) {
+                val vm: StatisticsViewModel = viewModel(factory = viewModelFactory)
+                StatisticsScreen(viewModel = vm)
+            }
             composable(Routes.BUDGET) {
                 val vm: BudgetViewModel = viewModel(factory = viewModelFactory)
                 BudgetScreen(viewModel = vm)
