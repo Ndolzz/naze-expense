@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.naze.expense.ui.components.CategoryIcon
@@ -84,7 +85,6 @@ fun BudgetScreen(viewModel: BudgetViewModel) {
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                // Ringkasan total
                 item {
                     Card(
                         modifier = Modifier
@@ -95,10 +95,7 @@ fun BudgetScreen(viewModel: BudgetViewModel) {
                         ),
                     ) {
                         Column(Modifier.padding(16.dp)) {
-                            Text(
-                                "Total Budget ${monthLabel()}",
-                                style = MaterialTheme.typography.titleMedium,
-                            )
+                            Text("Total Budget ${monthLabel()}", style = MaterialTheme.typography.titleMedium)
                             val currency = state.settings.currencyCode
                             Text(
                                 "${formatAmount(state.totalSpent, currency)} dari ${formatAmount(state.totalBudget, currency)}",
@@ -119,11 +116,10 @@ fun BudgetScreen(viewModel: BudgetViewModel) {
                         }
                     }
                 }
-                // Daftar budget per kategori
                 items(state.items, key = { it.budget.categoryId }) { item ->
-                    BudgetCard(item, state.settings.currencyCode, onDelete = {
+                    BudgetCard(item, state.settings.currencyCode) {
                         viewModel.deleteBudget(item.budget.categoryId)
-                    })
+                    }
                 }
                 item { Spacer(Modifier.height(96.dp)) }
             }
@@ -152,6 +148,16 @@ private fun BudgetCard(
     val category = item.budget.category ?: return
     val over = item.remaining < 0
     val nearLimit = !over && item.progress >= 0.8f
+    val progressColor = when {
+        over -> MaterialTheme.colorScheme.tertiary
+        nearLimit -> Color(0xFFFF9800)
+        else -> MaterialTheme.colorScheme.primary
+    }
+    val remainingColor = when {
+        over -> MaterialTheme.colorScheme.tertiary
+        nearLimit -> Color(0xFFFF9800)
+        else -> MaterialTheme.colorScheme.secondary
+    }
 
     Card(
         modifier = Modifier
@@ -160,7 +166,10 @@ private fun BudgetCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 CategoryIcon(category)
                 Column(Modifier.weight(1f)) {
                     Text(category.name, style = MaterialTheme.typography.titleMedium)
@@ -179,33 +188,30 @@ private fun BudgetCard(
                 }
             }
 
-            // Progress bar pengeluaran vs budget
             LinearProgressIndicator(
                 progress = { item.progress.coerceAtMost(1f) },
-                color = when {
-                    over -> MaterialTheme.colorScheme.tertiary
-                    nearLimit -> androidx.compose.ui.graphics.Color(0xFFFF9800)
-                    else -> MaterialTheme.colorScheme.primary
-                },
+                color = progressColor,
                 trackColor = MaterialTheme.colorScheme.surface,
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Row(Modifier.fillMaxWidth(), alignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     "Terpakai: ${formatAmount(item.spent, currency)}",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
                 )
                 Text(
-                    if (over) "Lewat ${formatAmount(-item.remaining, currency)}"
-                    else "Sisa ${formatAmount(item.remaining, currency)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = when {
-                        over -> MaterialTheme.colorScheme.tertiary
-                        nearLimit -> androidx.compose.ui.graphics.Color(0xFFFF9800)
-                        else -> MaterialTheme.colorScheme.secondary
+                    text = if (over) {
+                        "Lewat ${formatAmount(-item.remaining, currency)}"
+                    } else {
+                        "Sisa ${formatAmount(item.remaining, currency)}"
                     },
+                    style = MaterialTheme.typography.titleMedium,
+                    color = remainingColor,
                 )
             }
         }
@@ -231,8 +237,6 @@ private fun AddBudgetSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("Tambah Budget", style = MaterialTheme.typography.titleLarge)
-
-            // Pilih kategori
             Text("Kategori", style = MaterialTheme.typography.titleMedium)
             androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
                 columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(3),
@@ -268,9 +272,7 @@ private fun AddBudgetSheet(
                 onClick = {
                     val amount = amountText.toLongOrNull() ?: 0L
                     val catId = selectedCategoryId
-                    if (catId != null && amount > 0) {
-                        onSave(catId, amount)
-                    }
+                    if (catId != null && amount > 0) onSave(catId, amount)
                 },
                 enabled = selectedCategoryId != null && amountText.toLongOrNull()?.let { it > 0 } == true,
                 modifier = Modifier
