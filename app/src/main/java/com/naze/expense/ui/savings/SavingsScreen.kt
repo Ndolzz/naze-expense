@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,12 +26,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,7 +39,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Snack
+barHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -85,6 +85,12 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Menabung") }) },
         snackbarHost = { SnackbarHost(snackbar) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { editingGoal = null; showGoalDialog = true }) {
+                Icon(Icons.Filled.Add, contentDescription = "Tambah target")
+        
+    }
+        },
     ) { padding ->
         LazyColumn(
             Modifier
@@ -117,27 +123,6 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                 }
             }
 
-
-            // Action khusus halaman Menabung (BUKAN FAB transaksi):
-            // "+ Tambah Target" membuat target tabungan baru.
-            item {
-                Button(
-                    onClick = { editingGoal = null; showGoalDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text("Tambah Target")
-                }
-            }
-
             if (state.goals.isEmpty()) {
                 item {
                     Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
@@ -149,7 +134,8 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                                 modifier = Modifier.size(56.dp),
                             )
                             Text(
-                                "Belum ada target menabung.\nTekan Tambah Target untuk mulai menabung untuk sesuatu!",
+                                "Belum ada target menabung.\nTekan + untuk mulai menabung untuk ses
+uatu!",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 12.dp),
@@ -248,7 +234,8 @@ private fun GoalCard(
             // Progress
             LinearProgressIndicator(
                 progress = { ui.progress },
-                modifier = Modifier.fillMaxWidth(),
+                modi
+fier = Modifier.fillMaxWidth(),
                 color = if (ui.done) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
             )
 
@@ -346,7 +333,9 @@ private fun CustomAmountDialog(onDismiss: () -> Unit, onConfirm: (Long) -> Unit)
 
 /** Dialog buat/ubah target: nama, nominal target, tanggal deadline, foto. */
 @OptIn(ExperimentalMaterial3Api::class)
-@Composableprivate fun GoalDialog(
+@Composable
+priv
+ate fun GoalDialog(
     existing: SavingGoalEntity?,
     onDismiss: () -> Unit,
     onSave: (name: String, target: Long, deadline: Long, photo: Uri?) -> Unit,
@@ -393,7 +382,8 @@ private fun CustomAmountDialog(onDismiss: () -> Unit, onConfirm: (Long) -> Unit)
 
                 // Upload foto target
                 if (photoUri != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(verticalAlignment = Alignment.Cent
+erVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Foto siap dipakai", Modifier.weight(1f))
                         IconButton(onClick = { photoUri = null }) {
                             Icon(Icons.Filled.Close, contentDescription = "Hapus foto")
