@@ -17,26 +17,24 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.naze.expense.ui.components.NazeSymbol
 
 /**
- * Splash screen "Naze Financial OS".
- * Sengaja dibuat ringan (tanpa aset gambar / video) supaya aplikasi
- * tetap siap dipakai dalam waktu kurang dari 2 detik.
+ * Splash "Naze Expense" — dark-first, flat.
+ * Simbol N geometris + wordmark, tanpa aset gambar berat, siap < 2 detik.
  */
 @Composable
 fun NazeSplash(onFinished: () -> Unit) {
@@ -46,17 +44,14 @@ fun NazeSplash(onFinished: () -> Unit) {
     val bar = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
-        // Logo: fade-in cepat lalu pop dengan spring
         launch {
             logoAlpha.animateTo(1f, tween(350))
             logoScale.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
         }
-        // Judul: muncul setelah logo
         launch {
             delay(300)
             textAlpha.animateTo(1f, tween(500, easing = FastOutSlowInEasing))
         }
-        // Progress bar berjalan 1.6 detik lalu lanjut ke aplikasi
         bar.animateTo(1f, tween(1600, easing = LinearEasing))
         onFinished()
     }
@@ -65,14 +60,7 @@ fun NazeSplash(onFinished: () -> Unit) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.background,
-                        )
-                    )
-                ),
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center,
         ) {
             Column(
@@ -84,29 +72,31 @@ fun NazeSplash(onFinished: () -> Unit) {
                         .size(96.dp)
                         .alpha(logoAlpha.value)
                         .scale(logoScale.value)
-                        .background(Color.White.copy(alpha = 0.15f), CircleShape),
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                            CircleShape,
+                        ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        "N",
-                        fontSize = 44.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White,
-                    )
+                    NazeSymbol(size = 52.dp, tint = MaterialTheme.colorScheme.primary)
                 }
-                Text(
-                    "Naze Financial OS",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                androidx.compose.foundation.text.BasicText(
+                    "Naze Expense",
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    ),
                     modifier = Modifier
                         .padding(top = 20.dp)
                         .alpha(textAlpha.value),
                 )
-                Text(
+                androidx.compose.foundation.text.BasicText(
                     "Kelola uang, tetap offline.",
-                    fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.8f),
+                    style = androidx.compose.ui.text.TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
                     modifier = Modifier
                         .padding(top = 6.dp)
                         .alpha(textAlpha.value),
@@ -114,8 +104,8 @@ fun NazeSplash(onFinished: () -> Unit) {
                 LinearProgressIndicator(
                     progress = { bar.value },
                     modifier = Modifier.padding(top = 32.dp),
-                    color = Color.White,
-                    trackColor = Color.White.copy(alpha = 0.25f),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                 )
             }
         }

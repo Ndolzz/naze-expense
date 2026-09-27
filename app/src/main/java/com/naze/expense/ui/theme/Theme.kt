@@ -16,31 +16,43 @@ import androidx.compose.ui.unit.sp
 import com.naze.expense.domain.model.ThemeMode
 
 private val LightColors = lightColorScheme(
-    primary = Primary,
+    primary = BrandBlueDeep,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFE0E7FF),
-    onPrimaryContainer = Color(0xFF1E1B4B),
+    primaryContainer = Color(0xFFDCE7FF),
+    onPrimaryContainer = Color(0xFF0E2A5C),
     secondary = Income,
     secondaryContainer = Color(0xFFDCFCE7),
+    onSecondaryContainer = Color(0xFF0B3B1F),
     tertiary = Expense,
     tertiaryContainer = Color(0xFFFEE2E2),
+    onTertiaryContainer = Color(0xFF5C1A1A),
     surface = Color(0xFFFBFCFF),
-    surfaceVariant = Color(0xFFE9ECF7),
+    onSurface = Color(0xFF161B26),
+    surfaceVariant = Color(0xFFE9EEF9),
+    onSurfaceVariant = Color(0xFF4A5568),
     background = SurfaceLight,
+    onBackground = Color(0xFF161B26),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = PrimaryDark,
-    onPrimary = Color(0xFF1E1B4B),
-    primaryContainer = Color(0xFF26315C),
-    onPrimaryContainer = Color(0xFFE0E7FF),
-    secondary = IncomeContainer,
-    secondaryContainer = Color(0xFF14351F),
-    tertiary = ExpenseContainer,
-    tertiaryContainer = Color(0xFF3F1D1C),
-    surface = Color(0xFF121722),
-    surfaceVariant = Color(0xFF1C2230),
-    background = SurfaceDark,
+    primary = BrandBlueBright,
+    onPrimary = Color(0xFF0A1830),
+    primaryContainer = Color(0xFF1C2D4F),
+    onPrimaryContainer = Color(0xFFD6E4FF),
+    secondary = Color(0xFF34D399),
+    onSecondary = Color(0xFF06281A),
+    secondaryContainer = Color(0xFF103525),
+    onSecondaryContainer = Color(0xFFB7F4DC),
+    tertiary = Color(0xFFF87171),
+    onTertiary = Color(0xFF3B0D0D),
+    tertiaryContainer = Color(0xFF3B1D1C),
+    onTertiaryContainer = Color(0xFFFECACA),
+    surface = Color(0xFF101624),      // kartu & bottom bar
+    onSurface = Color(0xFFF2F5FA),     // off-white
+    surfaceVariant = Color(0xFF1A2234), // sheet "Lainnya" & kartu sekunder
+    onSurfaceVariant = Color(0xFF9AA7BD),
+    background = SurfaceDark,         // near-black dark navy
+    onBackground = Color(0xFFF2F5FA),
 )
 
 private val NazeShapes = Shapes(
@@ -58,7 +70,9 @@ private val NazeTypography = Typography(
     titleMedium = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
     bodyLarge = TextStyle(fontSize = 16.sp),
     bodyMedium = TextStyle(fontSize = 14.sp),
+    bodySmall = TextStyle(fontSize = 12.sp),
     labelLarge = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium),
+    labelSmall = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.Medium),
 )
 
 @Composable
