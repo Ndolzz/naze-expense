@@ -1,39 +1,54 @@
 package com.naze.expense.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.naze.expense.domain.model.ThemeMode
 
 private val LightColors = lightColorScheme(
     primary = Primary,
-    primaryContainer = SurfaceLight,
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFE0E7FF),
+    onPrimaryContainer = Color(0xFF1E1B4B),
     secondary = Income,
-    secondaryContainer = IncomeContainer,
+    secondaryContainer = Color(0xFFDCFCE7),
     tertiary = Expense,
-    tertiaryContainer = ExpenseContainer,
-    surface = SurfaceLight,
-    surfaceVariant = Color(0xFFE7E8F2),
+    tertiaryContainer = Color(0xFFFEE2E2),
+    surface = Color(0xFFFBFCFF),
+    surfaceVariant = Color(0xFFE9ECF7),
     background = SurfaceLight,
 )
 
 private val DarkColors = darkColorScheme(
     primary = PrimaryDark,
-    primaryContainer = Color(0xFF1D2A4D),
+    onPrimary = Color(0xFF1E1B4B),
+    primaryContainer = Color(0xFF26315C),
+    onPrimaryContainer = Color(0xFFE0E7FF),
     secondary = IncomeContainer,
-    secondaryContainer = Color(0xFF1B3824),
+    secondaryContainer = Color(0xFF14351F),
     tertiary = ExpenseContainer,
-    tertiaryContainer = Color(0xFF4A1F1E),
-    surface = SurfaceDark,
-    surfaceVariant = Color(0xFF1E2127),
+    tertiaryContainer = Color(0xFF3F1D1C),
+    surface = Color(0xFF121722),
+    surfaceVariant = Color(0xFF1C2230),
     background = SurfaceDark,
+)
+
+private val NazeShapes = Shapes(
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(32.dp),
 )
 
 private val NazeTypography = Typography(
@@ -59,6 +74,7 @@ fun NazeExpenseTheme(
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = NazeTypography,
+        shapes = NazeShapes,
         content = content,
     )
 }

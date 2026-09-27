@@ -2,13 +2,13 @@ package com.naze.expense.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Brand
-val Primary = Color(0xFF2979FF)
-val PrimaryDark = Color(0xFF82B1FF)
-val Income = Color(0xFF2E7D32)
-val IncomeContainer = Color(0xFFA5D6A7)
-val Expense = Color(0xFFE53935)
-val ExpenseContainer = Color(0xFFEF9A9A)
-val SurfaceLight = Color(0xFFF8F9FF)
-val SurfaceDark = Color(0xFF111318)
-val Orange = Color(0xFFFF9800)
+// Naze Financial OS — palet warna baru (indigo + mint, gaya "OS" modern)
+val Primary = Color(0xFF4F46E5)
+val PrimaryDark = Color(0xFFA5B4FC)
+val Income = Color(0xFF16A34A)
+val IncomeContainer = Color(0xFF86EFAC)
+val Expense = Color(0xFFEF4444)
+val ExpenseContainer = Color(0xFFFCA5A5)
+val SurfaceLight = Color(0xFFF6F7FB)
+val SurfaceDark = Color(0xFF0B0E14)
+val Accent = Color(0xFF2DD4BF)
