@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,12 +27,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -84,11 +85,8 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("Menabung") }) },
         snackbarHost = { SnackbarHost(snackbar) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { editingGoal = null; showGoalDialog = true }) {
-                Icon(Icons.Filled.Add, contentDescription = "Tambah target")
-            }
-        },
+        // Tidak ada FAB di halaman ini: FAB transaksi global hanya ada di Home.
+        // Membuat target memakai tombol "+ Tambah Target" di dalam halaman.
     ) { padding ->
         LazyColumn(
             Modifier
@@ -96,7 +94,7 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                 .padding(padding),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            // Kata penyemangat — berganti setiap hari
+            // Kata penyemangat - berganti setiap hari
             item {
                 Card(
                     modifier = Modifier
@@ -121,6 +119,26 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                 }
             }
 
+            // Action khusus halaman Menabung (BUKAN FAB transaksi):
+            // "+ Tambah Target" membuat target tabungan baru.
+            item {
+                Button(
+                    onClick = { editingGoal = null; showGoalDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = MaterialTheme.shapes.medium,
+                ) {
+                    Icon(
+                        Icons.Filled.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Tambah Target")
+                }
+            }
+
             if (state.goals.isEmpty()) {
                 item {
                     Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
@@ -132,7 +150,7 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                                 modifier = Modifier.size(56.dp),
                             )
                             Text(
-                                "Belum ada target menabung.\nTekan + untuk mulai menabung untuk sesuatu!",
+                                "Belum ada target menabung.\nTekan Tambah Target untuk mulai menabung untuk sesuatu!",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = 12.dp),
