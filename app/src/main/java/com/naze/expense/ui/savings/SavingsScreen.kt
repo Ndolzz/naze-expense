@@ -72,6 +72,7 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
     val state by viewModel.state.collectAsState()
     val snackbar = remember { SnackbarHostState() }
     val currency = state.settings.currencyCode
+    val context = LocalContext.current
 
     var showGoalDialog by remember { mutableStateOf(false) }
     var editingGoal by remember { mutableStateOf<SavingGoalEntity?>(null) }
@@ -160,9 +161,9 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
             onDismiss = { showGoalDialog = false },
             onSave = { name, target, deadline, photo ->
                 if (editingGoal == null) {
-                    viewModel.addGoal(name, target, deadline, photo, LocalContext.current)
+                    viewModel.addGoal(name, target, deadline, photo, context)
                 } else {
-                    viewModel.updateGoal(editingGoal!!, name, target, deadline, photo, LocalContext.current)
+                    viewModel.updateGoal(editingGoal!!, name, target, deadline, photo, context)
                 }
                 showGoalDialog = false
             },
