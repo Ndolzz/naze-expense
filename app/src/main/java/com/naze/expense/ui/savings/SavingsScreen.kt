@@ -26,13 +26,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -42,8 +41,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import
- androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -66,12 +63,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.naze.expense.data.local.entity.SavingGoalEntity
 import com.naze.expense.ui.theme.formatAmount
-import java.io.File
 import java.text.NumberFormat
 import java.util.Calendar
-
-// Nominal setor cepat — bisa ditambah/dikurangi sesuai selera
-private val QUICK_AMOUNTS = listOf(1_000L, 2_000L, 3_000L, 5_000L, 10_000L, 20_000L, 50_000L)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,8 +84,7 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
         topBar = { TopAppBar(title = { Text("Menabung") }) },
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { editing
-Goal = null; showGoalDialog = true }) {
+            FloatingActionButton(onClick = { editingGoal = null; showGoalDialog = true }) {
                 Icon(Icons.Filled.Add, contentDescription = "Tambah target")
             }
         },
@@ -115,7 +107,7 @@ Goal = null; showGoalDialog = true }) {
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
-                            "\uD83D\uDCA1 Semangat hari ini",
+                            "Semangat hari ini",
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -137,8 +129,7 @@ Goal = null; showGoalDialog = true }) {
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 modifier = Modifier.size(56.dp),
-                         
-   )
+                            )
                             Text(
                                 "Belum ada target menabung.\nTekan + untuk mulai menabung untuk sesuatu!",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -193,8 +184,7 @@ private fun GoalCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColo
-rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
@@ -224,7 +214,7 @@ rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                         maxLines = 2, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        if (ui.done) "Target tercapai! \uD83C\uDF89"
+                        if (ui.done) "Target tercapai!"
                         else formatAmount(ui.saved, currency) + " dari " + formatAmount(ui.goal.targetAmount, currency),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -232,8 +222,7 @@ rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 }
                 IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = "Ubah") }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme
-.onSurfaceVariant)
+                    Icon(Icons.Filled.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -252,8 +241,8 @@ rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        if (ui.done) "Kamu sudah mencapai target ini \uD83C\uDF89"
-                        else "\u23F3 Sisa " + ui.daysLeft + " hari — setor " +
+                        if (ui.done) "Kamu sudah mencapai target ini!"
+                        else "Sisa " + ui.daysLeft + " hari - setor " +
                             formatAmount(ui.perDay, currency) + " per hari",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
@@ -277,8 +266,7 @@ rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
                 listOf(1_000L, 2_000L, 5_000L, 10_000L).forEach { amount ->
                     FilterChip(
-                       
- selected = false,
+                        selected = false,
                         onClick = { onDeposit(amount) },
                         label = { Text(NumberFormat.getIntegerInstance().format(amount)) },
                     )
@@ -315,7 +303,6 @@ private fun CustomAmountDialog(onDismiss: () -> Unit, onConfirm: (Long) -> Unit)
                     label = { Text("Nominal (misal: 15000)") },
                     singleLine = true,
                 )
-                // Nominal cepat tambahan (bisa atur sendiri via input di atas)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(3_000L, 20_000L, 50_000L).forEach { amount ->
                         FilterChip(
@@ -330,8 +317,7 @@ private fun CustomAmountDialog(onDismiss: () -> Unit, onConfirm: (Long) -> Unit)
         confirmButton = {
             TextButton(
                 onClick = { if (parsed > 0) onConfirm(parsed) },
-                enabled = p
-arsed > 0,
+                enabled = parsed > 0,
             ) { Text("Setor") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } },
@@ -382,8 +368,7 @@ private fun GoalDialog(
                     onValueChange = { targetText = it },
                     label = { Text("Target uang (misal: 5000000)") },
                     singleLine = true,
-                
-)
+                )
                 Text("Tanggal target:", style = MaterialTheme.typography.labelLarge)
                 DatePicker(state = datePickerState)
 
