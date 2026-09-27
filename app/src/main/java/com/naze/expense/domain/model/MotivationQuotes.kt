@@ -1,6 +1,6 @@
 package com.naze.expense.domain.model
 
-import java.time.LocalDate
+import java.util.Calendar
 
 /** Kutipan penyemangat menabung — berganti otomatis setiap hari. */
 object MotivationQuotes {
@@ -21,16 +21,17 @@ object MotivationQuotes {
         "Setiap hari adalah kesempatan untuk satu langkah lebih dekat.",
         "Orang sukses bukan yang penghasilannya besar, tapi yang tangannya tidak gatal.",
         "Hitung mundurnya bukan beban — itu pengingat bahwa targetmu nyata.",
-        "Lebih baikcapek atur uang sekarang daripadacapek cari utang nanti.",
+        "Lebih baik capek atur uang sekarang daripada capek cari utang nanti.",
         "Foto targetmu itu bukan hiasan. Itu kontrak dengan dirimu sendiri.",
         "Konsisten mengalahkan besaran. 1.000 tiap hari tetap gunung.",
         "Hari ini kamu menabung, besok tabunganmu yang menolongmu.",
         "Semua mimpi butuh modal. Kumpulkan sekarang.",
     )
 
-    /** Quote hari ini — berganti otomatis tiap hari (indeks = hari dalam setahun). */
+    /** Quote hari ini — berganti otomatis tiap hari (aman untuk minSdk 24). */
     fun today(): String {
-        val day = LocalDate.now().let { it.dayOfYear + it.year * 366 }
+        val cal = Calendar.getInstance()
+        val day = cal.get(Calendar.DAY_OF_YEAR) + cal.get(Calendar.YEAR) * 366
         return quotes[((day % quotes.size) + quotes.size) % quotes.size]
     }
 }
