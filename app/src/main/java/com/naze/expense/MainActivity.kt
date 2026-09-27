@@ -44,7 +44,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.ui.budget.BudgetScreen
-import com.naze.expense.ui.budget.BudgetViewModel
+import c
+om.naze.expense.ui.budget.BudgetViewModel
 import com.naze.expense.ui.components.NazeBottomBar
 import com.naze.expense.ui.components.NazeMoreSheet
 import com.naze.expense.ui.dashboard.DashboardScreen
@@ -89,7 +90,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settings by container.settingsRepository.settings
                 .collectAsState(initial = UserSettings())
-            var showSplash by remember { mutableStateOf(true) }
+            var showSplash by remember { mutableState
+Of(true) }
 
             NazeExpenseTheme(themeMode = settings.themeMode) {
                 Crossfade(targetState = showSplash, label = "splash") { splash ->
@@ -141,7 +143,8 @@ class MainActivity : ComponentActivity() {
         val currentRoute = backStack?.destination?.route
 
         val showBottomBar = currentRoute in topLevelRoutes
-        // SATU-satunya FAB transaksi: hanya di Home.
+        // SATU-satunya FAB
+ transaksi: hanya di Home.
         val showTransactionFab = currentRoute == Routes.DASHBOARD
         var showMoreSheet by remember { mutableStateOf(false) }
 
@@ -192,7 +195,8 @@ class MainActivity : ComponentActivity() {
         // tapi FAB transaksi tetap hanya muncul di Home.
         val showTransactionFab = currentRoute == Routes.DASHBOARD
 
-        Row(Modifier.fillMaxSize()) {
+ 
+       Row(Modifier.fillMaxSize()) {
             if (showRail) {
                 NavigationRail(
                     header = {
@@ -205,17 +209,15 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                 ) {
-                    (topLevelDestinations + moreDestinations).forEach { item ->
+                    val railItems: List<Triple<String, String, androidx.compose.ui.graphics.vector.ImageVector>> =
+                        topLevelDestinations.map { Triple(it.route, it.label, it.icon) } +
+                            moreDestinations.map { Triple(it.route, it.label, it.icon) }
+                    railItems.forEach { (route, label, icon) ->
                         NavigationRailItem(
-                            icon = {
-                                Icon(
-                                    item.icon,
-                                    contentDescription = item.label,
-                                )
-                            },
-                            label = { Text(item.label) },
-                            selected = currentRoute == item.route,
-                            onClick = { navController.navigateTopLevel(item.route) },
+                            icon = { Icon(icon, contentDescription = label) },
+                            label = { Text(label) },
+                            selected = currentRoute == route,
+                            onClick = { navController.navigateTopLevel(route) },
                         )
                     }
                 }
@@ -243,7 +245,8 @@ class MainActivity : ComponentActivity() {
         NavHost(
             navController = navController,
             startDestination = Routes.DASHBOARD,
-        ) {
+      
+  ) {
             composable(Routes.DASHBOARD) {
                 val vm: DashboardViewModel = viewModel(factory = viewModelFactory)
                 DashboardScreen(
@@ -287,7 +290,8 @@ class MainActivity : ComponentActivity() {
                         initializer { TransactionViewModel(container, editId) }
                     }
                 )
-                AddEditTransactionScreen(
+                AddEdi
+tTransactionScreen(
                     viewModel = vm,
                     onDone = { navController.popBackStack() },
                 )
