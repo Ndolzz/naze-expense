@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,15 +44,17 @@ import androidx.compose.ui.unit.sp
 import com.naze.expense.ui.navigation.MoreDestination
 import com.naze.expense.ui.navigation.TopLevelDestination
 import com.naze.expense.ui.navigation.moreDestinations
+import com.naze.expense.ui.navigation.topLevelDestinations
 
 private const val NAV_ANIM_MS = 250
 
 /**
  * Bottom navigation ringkas: selalu 4 item (Home, Riwayat, Statistik, Lainnya).
  * - Ikon 22dp + label 11sp satu baris, tidak pernah terpotong.
- * - Item memakai weight(1f) sehingga spacing menyesuaikan lebar layar.
+ * - Semua item memakai weight(1f): spacing otomatis menyesuaikan lebar layar.
  * - Tinggi total hanya ~64dp + inset sistem: hemat ruang.
  * - Active state berupa pill kecil di belakang ikon dengan animasi 250ms.
+ * - Saat route aktif adalah Menabung/Budget/Setelan, item "Lainnya" yang aktif.
  */
 @Composable
 fun NazeBottomBar(
@@ -72,7 +75,14 @@ fun NazeBottomBar(
                 .navigationBarsPadding()
                 .height(64.dp)
         ) {
-            topLevelItems(selectedRoute, onDestinationClick)
+            topLevelDestinations.forEach { dest ->
+                NavItem(
+                    label = dest.label,
+                    icon = dest.icon,
+                    selected = selectedRoute == dest.route,
+                    onClick = { onDestinationClick(dest.route) },
+                )
+            }
             NavItem(
                 label = "Lainnya",
                 icon = Icons.Filled.MoreHoriz,
@@ -81,15 +91,6 @@ fun NazeBottomBar(
             )
         }
     }
-}
-
-@Composable
-private fun RowScope.topLevelItems(
-    selectedRoute: String?,
-    onDestinationClick: (String) -> Unit,
-) {
-    // Didefinisikan terpisah supaya komposisi item tidak dicampur logika sheet.
-    listOf<@Composable () -> Unit>().let { }
 }
 
 @Composable
@@ -115,7 +116,7 @@ private fun RowScope.NavItem(
             .weight(1f)
             .fillMaxHeight()
             .clickable(
-                interactionSource = androidx.compose.runtime.remember { MutableInteractionSource() },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick,
             ),
@@ -152,8 +153,8 @@ private fun RowScope.NavItem(
 
 /**
  * Bottom sheet "Lainnya": Menabung, Budget, Setelan.
- * Rounded corner besar, drag handle, swipe-down & tap-luar untuk tutup,
- * warna sedikit lebih terang dari background utama, tinggi ringkas.
+ * Rounded corner besar (28dp), drag handle, swipe-down & tap-luar untuk tutup,
+ * warna sedikit lebih terang dari background utama, tinggi ringkas (3 baris).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

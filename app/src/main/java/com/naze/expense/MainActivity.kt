@@ -17,8 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
@@ -47,12 +45,16 @@ import androidx.navigation.navArgument
 import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.ui.budget.BudgetScreen
 import com.naze.expense.ui.budget.BudgetViewModel
+import com.naze.expense.ui.components.NazeBottomBar
+import com.naze.expense.ui.components.NazeMoreSheet
 import com.naze.expense.ui.dashboard.DashboardScreen
 import com.naze.expense.ui.dashboard.DashboardViewModel
 import com.naze.expense.ui.history.HistoryScreen
 import com.naze.expense.ui.history.HistoryViewModel
 import com.naze.expense.ui.navigation.Routes
-import com.naze.expense.ui.navigation.bottomNavItems
+import com.naze.expense.ui.navigation.moreDestinations
+import com.naze.expense.ui.navigation.topLevelDestinations
+import com.naze.expense.ui.navigation.topLevelRoutes
 import com.naze.expense.ui.savings.SavingsScreen
 import com.naze.expense.ui.savings.SavingsViewModel
 import com.naze.expense.ui.settings.SettingsScreen
@@ -113,8 +115,22 @@ class MainActivity : ComponentActivity() {
     private fun NazeApp(container: AppContainer) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
             // Responsif: layar lebar (tablet / landscape / foldable) memakai
-            // NavigationRail, layar HP memakai bottom navigation bar.
+            // NavigationRail, layar HP memakai bottom navigation 4-item.
             if (maxWidth >= 720.dp) ExpandedApp(container) else CompactApp(container)
+        }
+    }
+
+    /**
+     * Arsitektur FAB tunggal:
+     * FAB "tambah transaksi" HANYA dirender pada halaman Home. Halaman lain
+     * (Menabung, Budget, dst.) memakai action khusus di dalam halamannya
+     * masing-masing, sehingga dua tombol "+" tidak mungkin muncul bersamaan.
+     */
+    private fun NavHostController.navigateTopLevel(route: String) {
+        navigate(route) {
+            popUpTo(Routes.DASHBOARD) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
         }
     }
 
@@ -124,34 +140,26 @@ class MainActivity : ComponentActivity() {
         val backStack by navController.currentBackStackEntryAsState()
         val currentRoute = backStack?.destination?.route
 
-        val showBottomBar = currentRoute in bottomNavItems.map { it.route }
+        val showBottomBar = currentRoute in topLevelRoutes
+        // SATU-satunya FAB transaksi: hanya di Home.
+        val showTransactionFab = currentRoute == Routes.DASHBOARD
+        var showMoreSheet by remember { mutableStateOf(false) }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 if (showBottomBar) {
-                    NavigationBar {
-                        bottomNavItems.forEach { item ->
-                            NavigationBarItem(
-                                icon = { Icon(item.icon, contentDescription = item.label) },
-                                label = { Text(item.label) },
-                                selected = currentRoute == item.route,
-                                onClick = {
-                                    navController.navigate(item.route) {
-                                        popUpTo(Routes.DASHBOARD) { saveState = true }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                            )
-                        }
-                    }
+                    NazeBottomBar(
+                        selectedRoute = currentRoute,
+                        onDestinationClick = { navController.navigateTopLevel(it) },
+                        onMoreClick = { showMoreSheet = true },
+                    )
                 }
             },
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
                 NavGraph(navController, container)
-                if (showBottomBar) {
+                if (showTransactionFab) {
                     FloatingActionButton(
                         onClick = { navController.navigate(Routes.addTransaction()) },
                         modifier = Modifier
@@ -163,6 +171,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        if (showMoreSheet) {
+            NazeMoreSheet(
+                selectedRoute = currentRoute,
+                onDismiss = { showMoreSheet = false },
+                onDestinationClick = { navController.navigateTopLevel(it) },
+            )
+        }
     }
 
     @Composable
@@ -171,31 +187,35 @@ class MainActivity : ComponentActivity() {
         val backStack by navController.currentBackStackEntryAsState()
         val currentRoute = backStack?.destination?.route
 
-        val showRail = currentRoute in bottomNavItems.map { it.route }
+        val showRail = currentRoute in topLevelRoutes
+        // Di layar lebar semua 6 destinasi langsung ada di rail (tanpa sheet),
+        // tapi FAB transaksi tetap hanya muncul di Home.
+        val showTransactionFab = currentRoute == Routes.DASHBOARD
 
         Row(Modifier.fillMaxSize()) {
             if (showRail) {
                 NavigationRail(
                     header = {
-                        FloatingActionButton(
-                            onClick = { navController.navigate(Routes.addTransaction()) },
-                        ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Tambah transaksi")
+                        if (showTransactionFab) {
+                            FloatingActionButton(
+                                onClick = { navController.navigate(Routes.addTransaction()) },
+                            ) {
+                                Icon(Icons.Filled.Add, contentDescription = "Tambah transaksi")
+                            }
                         }
                     },
                 ) {
-                    bottomNavItems.forEach { item ->
+                    (topLevelDestinations + moreDestinations).forEach { item ->
                         NavigationRailItem(
-                            icon = { Icon(item.icon, contentDescription = item.label) },
+                            icon = {
+                                Icon(
+                                    item.icon,
+                                    contentDescription = item.label,
+                                )
+                            },
                             label = { Text(item.label) },
                             selected = currentRoute == item.route,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(Routes.DASHBOARD) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
+                            onClick = { navController.navigateTopLevel(item.route) },
                         )
                     }
                 }
