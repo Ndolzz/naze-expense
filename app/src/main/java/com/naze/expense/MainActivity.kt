@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -44,8 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naze.expense.data.preferences.UserSettings
 import com.naze.expense.ui.budget.BudgetScreen
-import c
-om.naze.expense.ui.budget.BudgetViewModel
+import com.naze.expense.ui.budget.BudgetViewModel
 import com.naze.expense.ui.components.NazeBottomBar
 import com.naze.expense.ui.components.NazeMoreSheet
 import com.naze.expense.ui.dashboard.DashboardScreen
@@ -90,8 +90,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val settings by container.settingsRepository.settings
                 .collectAsState(initial = UserSettings())
-            var showSplash by remember { mutableState
-Of(true) }
+            var showSplash by remember { mutableStateOf(true) }
 
             NazeExpenseTheme(themeMode = settings.themeMode) {
                 Crossfade(targetState = showSplash, label = "splash") { splash ->
@@ -123,10 +122,8 @@ Of(true) }
     }
 
     /**
-     * Arsitektur FAB tunggal:
-     * FAB "tambah transaksi" HANYA dirender pada halaman Home. Halaman lain
-     * (Menabung, Budget, dst.) memakai action khusus di dalam halamannya
-     * masing-masing, sehingga dua tombol "+" tidak mungkin muncul bersamaan.
+     * Navigasi top-level: popUpTo Home dengan saveState/restoreState supaya
+     * state tiap tab tetap hidup saat berpindah-pindah.
      */
     private fun NavHostController.navigateTopLevel(route: String) {
         navigate(route) {
@@ -143,8 +140,7 @@ Of(true) }
         val currentRoute = backStack?.destination?.route
 
         val showBottomBar = currentRoute in topLevelRoutes
-        // SATU-satunya FAB
- transaksi: hanya di Home.
+        // SATU-satunya FAB transaksi: hanya dirender di Home.
         val showTransactionFab = currentRoute == Routes.DASHBOARD
         var showMoreSheet by remember { mutableStateOf(false) }
 
@@ -195,8 +191,7 @@ Of(true) }
         // tapi FAB transaksi tetap hanya muncul di Home.
         val showTransactionFab = currentRoute == Routes.DASHBOARD
 
- 
-       Row(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxSize()) {
             if (showRail) {
                 NavigationRail(
                     header = {
@@ -209,7 +204,7 @@ Of(true) }
                         }
                     },
                 ) {
-                    val railItems: List<Triple<String, String, androidx.compose.ui.graphics.vector.ImageVector>> =
+                    val railItems: List<Triple<String, String, ImageVector>> =
                         topLevelDestinations.map { Triple(it.route, it.label, it.icon) } +
                             moreDestinations.map { Triple(it.route, it.label, it.icon) }
                     railItems.forEach { (route, label, icon) ->
@@ -245,20 +240,23 @@ Of(true) }
         NavHost(
             navController = navController,
             startDestination = Routes.DASHBOARD,
-      
-  ) {
+        ) {
             composable(Routes.DASHBOARD) {
                 val vm: DashboardViewModel = viewModel(factory = viewModelFactory)
                 DashboardScreen(
                     viewModel = vm,
-                    onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
+                    onTransactionClick = { id ->
+                        navController.navigate(Routes.addTransaction(id))
+                    },
                 )
             }
             composable(Routes.HISTORY) {
                 val vm: HistoryViewModel = viewModel(factory = viewModelFactory)
                 HistoryScreen(
                     viewModel = vm,
-                    onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
+                    onTransactionClick = { id ->
+                        navController.navigate(Routes.addTransaction(id))
+                    },
                 )
             }
             composable(Routes.SAVINGS) {
@@ -290,8 +288,7 @@ Of(true) }
                         initializer { TransactionViewModel(container, editId) }
                     }
                 )
-                AddEdi
-tTransactionScreen(
+                AddEditTransactionScreen(
                     viewModel = vm,
                     onDone = { navController.popBackStack() },
                 )
