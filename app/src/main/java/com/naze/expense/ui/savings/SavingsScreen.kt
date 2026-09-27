@@ -31,6 +31,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,7 +41,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import
+ androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -88,7 +90,8 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
         topBar = { TopAppBar(title = { Text("Menabung") }) },
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { editingGoal = null; showGoalDialog = true }) {
+            FloatingActionButton(onClick = { editing
+Goal = null; showGoalDialog = true }) {
                 Icon(Icons.Filled.Add, contentDescription = "Tambah target")
             }
         },
@@ -133,7 +136,8 @@ fun SavingsScreen(viewModel: SavingsViewModel) {
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 modifier = Modifier.size(56.dp),
-                            )
+                         
+   )
                             Text(
                                 "Belum ada target menabung.\nTekan + untuk mulai menabung untuk sesuatu!",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -188,7 +192,8 @@ private fun GoalCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColo
+rs(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
@@ -226,7 +231,8 @@ private fun GoalCard(
                 }
                 IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = "Ubah") }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Filled.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme
+.onSurfaceVariant)
                 }
             }
 
@@ -270,7 +276,8 @@ private fun GoalCard(
             ) {
                 listOf(1_000L, 2_000L, 5_000L, 10_000L).forEach { amount ->
                     FilterChip(
-                        selected = false,
+                       
+ selected = false,
                         onClick = { onDeposit(amount) },
                         label = { Text(NumberFormat.getIntegerInstance().format(amount)) },
                     )
@@ -322,7 +329,8 @@ private fun CustomAmountDialog(onDismiss: () -> Unit, onConfirm: (Long) -> Unit)
         confirmButton = {
             TextButton(
                 onClick = { if (parsed > 0) onConfirm(parsed) },
-                enabled = parsed > 0,
+                enabled = p
+arsed > 0,
             ) { Text("Setor") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } },
@@ -373,7 +381,8 @@ private fun GoalDialog(
                     onValueChange = { targetText = it },
                     label = { Text("Target uang (misal: 5000000)") },
                     singleLine = true,
-                )
+                
+)
                 Text("Tanggal target:", style = MaterialTheme.typography.labelLarge)
                 DatePicker(state = datePickerState)
 
