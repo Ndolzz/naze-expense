@@ -1,16 +1,10 @@
 package com.naze.expense
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,21 +13,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -53,16 +40,16 @@ import com.naze.expense.ui.history.HistoryScreen
 import com.naze.expense.ui.history.HistoryViewModel
 import com.naze.expense.ui.navigation.Routes
 import com.naze.expense.ui.navigation.bottomNavItems
+import com.naze.expense.ui.savings.SavingsScreen
+import com.naze.expense.ui.savings.SavingsViewModel
 import com.naze.expense.ui.settings.SettingsScreen
 import com.naze.expense.ui.settings.SettingsViewModel
-import com.naze.expense.ui.splash.NazeSplash
-import com.naze.expense.ui.statistics.StatisticsScreen
+import com.n
+aze.expense.ui.statistics.StatisticsScreen
 import com.naze.expense.ui.statistics.StatisticsViewModel
 import com.naze.expense.ui.theme.NazeExpenseTheme
 import com.naze.expense.ui.transaction.AddEditTransactionScreen
 import com.naze.expense.ui.transaction.TransactionViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -72,52 +59,17 @@ class MainActivity : ComponentActivity() {
 
         val container = (application as NazeExpenseApp).appContainer
 
-        // Android 9 ke bawah: izin tulis storage publik untuk auto-backup.
-        // Android 10+ tidak butuh permission (MediaStore).
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                1001,
-            )
-        }
-
         setContent {
             val settings by container.settingsRepository.settings
                 .collectAsState(initial = UserSettings())
-            var showSplash by remember { mutableStateOf(true) }
-
             NazeExpenseTheme(themeMode = settings.themeMode) {
-                Crossfade(targetState = showSplash, label = "splash") { splash ->
-                    if (splash) {
-                        NazeSplash(onFinished = { showSplash = false })
-                    } else {
-                        NazeApp(container)
-                    }
-                }
+                NazeApp(container)
             }
         }
     }
 
-    // Auto-backup tiap kali app keluar ke background: data tersimpan di
-    // Documents/NazeFinancialOS dan tetap ada walau aplikasi di-uninstall.
-    override fun onPause() {
-        super.onPause()
-        val container = (application as NazeExpenseApp).appContainer
-        lifecycleScope.launch(Dispatchers.IO) { container.autoBackup() }
-    }
-
     @Composable
     private fun NazeApp(container: AppContainer) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            // Responsif: layar lebar (tablet / landscape / foldable) memakai
-            // NavigationRail, layar HP memakai bottom navigation bar.
-            if (maxWidth >= 720.dp) ExpandedApp(container) else CompactApp(container)
-        }
-    }
-
-    @Composable
-    private fun CompactApp(container: AppContainer) {
         val navController: NavHostController = rememberNavController()
         val backStack by navController.currentBackStackEntryAsState()
         val currentRoute = backStack?.destination?.route
@@ -140,7 +92,8 @@ class MainActivity : ComponentActivity() {
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                },
+      
+                          },
                             )
                         }
                     }
@@ -164,47 +117,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun ExpandedApp(container: AppContainer) {
-        val navController: NavHostController = rememberNavController()
-        val backStack by navController.currentBackStackEntryAsState()
-        val currentRoute = backStack?.destination?.route
-
-        val showRail = currentRoute in bottomNavItems.map { it.route }
-
-        Row(Modifier.fillMaxSize()) {
-            if (showRail) {
-                NavigationRail(
-                    header = {
-                        FloatingActionButton(
-                            onClick = { navController.navigate(Routes.addTransaction()) },
-                        ) {
-                            Icon(Icons.Filled.Add, contentDescription = "Tambah transaksi")
-                        }
-                    },
-                ) {
-                    bottomNavItems.forEach { item ->
-                        NavigationRailItem(
-                            icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) },
-                            selected = currentRoute == item.route,
-                            onClick = {
-                                navController.navigate(item.route) {
-                                    popUpTo(Routes.DASHBOARD) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                        )
-                    }
-                }
-            }
-            Box(Modifier.weight(1f).fillMaxHeight()) {
-                NavGraph(navController, container)
-            }
-        }
-    }
-
-    @Composable
     private fun NavGraph(
         navController: NavHostController,
         container: AppContainer,
@@ -215,6 +127,7 @@ class MainActivity : ComponentActivity() {
             initializer { BudgetViewModel(container) }
             initializer { StatisticsViewModel(container) }
             initializer { SettingsViewModel(container) }
+            initializer { SavingsViewModel(container) }
         }
 
         NavHost(
@@ -234,7 +147,8 @@ class MainActivity : ComponentActivity() {
                     viewModel = vm,
                     onTransactionClick = { id -> navController.navigate(Routes.addTransaction(id)) },
                 )
-            }
+   
+         }
             composable(Routes.STATISTICS) {
                 val vm: StatisticsViewModel = viewModel(factory = viewModelFactory)
                 StatisticsScreen(viewModel = vm)
@@ -242,6 +156,10 @@ class MainActivity : ComponentActivity() {
             composable(Routes.BUDGET) {
                 val vm: BudgetViewModel = viewModel(factory = viewModelFactory)
                 BudgetScreen(viewModel = vm)
+            }
+            composable(Routes.SAVINGS) {
+                val vm: SavingsViewModel = viewModel(factory = viewModelFactory)
+                SavingsScreen(viewModel = vm)
             }
             composable(Routes.SETTINGS) {
                 val vm: SettingsViewModel = viewModel(factory = viewModelFactory)
