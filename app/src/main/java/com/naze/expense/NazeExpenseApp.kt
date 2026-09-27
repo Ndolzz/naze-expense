@@ -6,6 +6,7 @@ import com.naze.expense.data.local.db.NazeDatabase
 import com.naze.expense.data.preferences.SettingsDataStore
 import com.naze.expense.data.repository.BudgetRepository
 import com.naze.expense.data.repository.CategoryRepository
+import com.naze.expense.data.repository.SavingGoalRepository
 import com.naze.expense.data.repository.SettingsRepository
 import com.naze.expense.data.repository.TransactionRepository
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,7 @@ class AppContainer(private val context: android.content.Context) {
     val categoryRepository = CategoryRepository(database.categoryDao())
     val budgetRepository = BudgetRepository(database.budgetDao())
     val settingsRepository = SettingsRepository(SettingsDataStore(context))
+    val savingGoalRepository = SavingGoalRepository(database.savingGoalDao())
 
     val autoBackup: AutoBackupManager by lazy { AutoBackupManager(context, this) }
 
